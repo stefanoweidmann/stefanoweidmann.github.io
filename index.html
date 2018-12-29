@@ -1,0 +1,19 @@
+---
+layout: default
+title: Stefano Weidmann
+---
+
+<div id="home">
+   <!--<p class="intro">Welcome to my personal website</p>-->
+   <h2>Posts</h2>
+   <ul class="posts">
+      {% assign sorted_posts = site.posts | sort: 'title' %}
+      {% for post in sorted_posts %}
+      <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a><br>
+      {% endfor %}
+   </ul>
+</div>
+
+<div id="a">
+  <span class="comment">Theme based on <a href="https://github.com/bozbalci/gereksiz">Gereksiz</a></span>
+</div>

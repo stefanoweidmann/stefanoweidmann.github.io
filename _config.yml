@@ -1,47 +1,7 @@
-# Site
-title:          Ramme
-bio:            'Just a simple Jekyll theme'
-description:    "Simple Jekyll theme for your blog by Taylan Tatlı"
-picture:        'assets/img/Logo.png'
-locale:         en_US
-url:            http://taylantatli.me/Ramme
+name: "Stefano Weidmann"
+markdown: redcarpet
+highlighter: rouge
+permalink: :title
+exclude: [README.md, LICENSE, Makefile]
+baseurl: ''
 
-# Jekyll
-permalink:      /:title/
-markdown:       kramdown
-highlighter:    rouge
-kramdown:
-  auto_ids: true
-  footnote_nr: 1
-  entity_output: as_char
-  toc_levels: 1..6
-  enable_coderay: false
-sass:
-  sass_dir: _sass
-  style: compressed
-
-# Social
-# if you don't have any of social below, comment the line.
-email: stefano.weidmann@mail.ch
-github: stefanoweidmann
-
-
-# Paginate
-# if you don't need pagination, comment the *paginate* configs below
-# paginate: 5
-# paginate_path: "blog/:num/"
-
-# Gems
-plugins:
-  - jekyll-mentions
-# - jekyll-feed
-  - jekyll-sitemap
-  - jekyll-gist
-  - jekyll-paginate
-  - jekyll-email-protect
-
-jekyll-mentions:
-    base_url: https://github.com
-
-# Exclude list
-exclude: [README.md, Gemfile, Gemfile.lock, node_modules, gulpfile.js, package.json, _site, src, vendor, CNAME, LICENSE, Rakefile]
