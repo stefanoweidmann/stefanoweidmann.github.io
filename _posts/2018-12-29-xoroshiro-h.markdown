@@ -13,7 +13,8 @@ Here some words of caution by the creators
 
 For my usage and yours, I have wrapped the basic algorithm into a header only library [`xoroshiro.h`](/downloads/xoroshiro.h)
  for C99 and C++.
-[Get xoroshiro.h](/downloads/xoroshiro.h){: .btn}
+
+<a href="/downloads/xoroshiro.h" class="link_btn">xoroshiro.h</a>
 
 ### Basic Usage
 
@@ -37,7 +38,7 @@ const double dbl = Xoroshiro_GenerateRealInHalfOpenInterval(0, 1, &rng[0]);
 
 ### Advanced Usage
 
-Included is also a Random number engine compatible with C++11 for use with `<random>`.
+Included is also a Random number engine compatible with C++11 for use with [`<random>`](https://en.cppreference.com/w/cpp/header/random).
 It is designed to be a drop in replacement for std::mt19937_64. Technically, it fulfills the concept
 [`UniformRandomBitGenerator`](https://en.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator).
 
