@@ -10,9 +10,9 @@
       <link rel="stylesheet" href="/css/normalize.css">
       <!--<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
       <link rel="icon" href="/favicon.ico" type="image/x-icon">-->
-      <title>Xoroshiro.h</title>
+      <title>Random Number Generation with xoroshiro.h</title>
    </head>
-   
+
    <body>
       <main>
          <header>
@@ -20,8 +20,85 @@
          </header>
 
          <article>
-   <h2>Xoroshiro.h</h2>
-   <p>sdkfkds</p>
+   <h2>Random Number Generation with xoroshiro.h</h2>
+   <p>For generating random numbers, I like to use the <a href="http://xoshiro.di.unimi.it">Xoroshiro128+</a> generator, which is fast and generates high quality output.
+It’s especially nice to use it in multithreaded applications, because you can initialize a distinct generator for each thread with the same seed for all.
+Altough it has done a good job in all my uses, consider using another generator for very long simulations or simulations with many threads.
+Here some words of caution by the creators</p>
+<blockquote>
+  <p>They [xoroshiro128+ and another variant called xoroshiro128**] are suitable only for low-scale parallel applications;
+ moreover, xoroshiro128+ exhibits a mild dependency in Hamming weights that generates a failure after 5 TB of output in our test.
+ We believe this slight bias cannot affect any application.</p>
+</blockquote>
+
+<p>For my usage and yours, I have wrapped the basic algorithm into a header only library <a href="/downloads/xoroshiro.h"><code class="highlighter-rouge">xoroshiro.h</code></a>
+ for C99 and C++.
+<a href="/downloads/xoroshiro.h" class="btn">Get xoroshiro.h</a></p>
+
+<h3 id="basic-usage">Basic Usage</h3>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="cp">#include &lt;xoroshiro.h&gt;
+#define NUM_THREADS 2
+</span><span class="k">const</span> <span class="kt">uint64_t</span> <span class="n">seed</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
+<span class="n">Xoroshiro_State_t</span> <span class="n">rng</span><span class="p">[</span><span class="n">NUM_THREADS</span><span class="p">];</span>
+<span class="c1">// initialize one generator per thread</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">threadNo</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">threadNo</span> <span class="o">&lt;</span> <span class="n">NUM_THREADS</span><span class="p">;</span> <span class="o">++</span><span class="n">threadNo</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">rng</span><span class="p">[</span><span class="n">threadNo</span><span class="p">]</span> <span class="o">=</span> <span class="n">Xoroshiro_GetInitialState</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">threadNo</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">const</span> <span class="n">bool</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">Xoroshiro_GetBool</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rng</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="k">const</span> <span class="kt">uint64_t</span> <span class="n">uintNum</span> <span class="o">=</span> <span class="n">Xoroshiro_GetNextNumber</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rng</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="c1">// 0 &lt;= dbl &lt; 1</span>
+<span class="k">const</span> <span class="kt">double</span> <span class="n">dbl</span> <span class="o">=</span> <span class="n">Xoroshiro_GenerateRealInHalfOpenInterval</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">rng</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span></code></pre></figure>
+
+<h3 id="advanced-usage">Advanced Usage</h3>
+
+<p>Included is also a Random number engine compatible with C++11 for use with <code class="highlighter-rouge">&lt;random&gt;</code>.
+It is designed to be a drop in replacement for std::mt19937_64. Technically, it fulfills the concept
+<a href="https://en.cppreference.com/w/cpp/named_req/UniformRandomBitGenerator"><code class="highlighter-rouge">UniformRandomBitGenerator</code></a>.</p>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="cp">#include &lt;random&gt;
+#include &lt;xoroshiro.h&gt;
+</span><span class="c1">// in thread number 9 (the 10th thread)</span>
+<span class="n">XoroshiroRandomNumberEngine</span> <span class="n">rng</span><span class="p">(</span><span class="mi">42</span> <span class="cm">/* seed */</span><span class="p">,</span> <span class="mi">8</span> <span class="cm">/* number of this thread, &gt;= 0, optional */</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">uniform_int_distribution</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">diceDistribution</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">);</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">diceRoll</span> <span class="o">=</span> <span class="n">diceDistribution</span><span class="p">(</span><span class="n">rng</span><span class="p">);</span></code></pre></figure>
+
+<p>If you like to use the <a href="https://www.gnu.org/software/gsl/">GNU scientific library (GSL)</a>, as I do,
+define <code class="highlighter-rouge">XOROSHIRO_GSL</code> before including <code class="highlighter-rouge">xoroshiro.h</code> and get a new RNG to use with it</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="c1">//////////////////////////////////////</span>
+<span class="c1">// C99</span>
+<span class="c1">//////////////////////////////////////</span>
+<span class="cp">#define XOROSHIRO_GSL
+#include &lt;xoroshiro.h&gt; // also includes gsl_rng.h now
+#include &lt;stdlib.h&gt;
+</span><span class="n">gsl_rng</span><span class="o">*</span> <span class="n">rng</span> <span class="o">=</span> <span class="n">gsl_rng_alloc</span><span class="p">(</span><span class="n">Xoroshiro_GSL_rng</span><span class="p">);</span>
+
+<span class="c1">// different thread numbers not supported</span>
+<span class="c1">// gsl_rng_set(rng, 42 /* seed */);</span>
+
+<span class="c1">// If different thread numbers are required, use this uglier variant,</span>
+<span class="k">const</span> <span class="n">Xoroshiro_State_t</span> <span class="n">xoroshiroState</span> <span class="o">=</span> <span class="n">Xoroshiro_GetInitialState</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">3</span> <span class="cm">/* thread no 3 */</span><span class="p">);</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">rng</span><span class="o">-&gt;</span><span class="n">state</span><span class="p">,</span> <span class="n">xoroshiroState</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Xoroshiro_State_t</span><span class="p">));</span>
+
+<span class="c1">// generates real in [0, 1[</span>
+<span class="k">const</span> <span class="kt">double</span> <span class="n">real</span> <span class="o">=</span> <span class="n">gsl_rng_uniform</span><span class="p">(</span><span class="n">rng</span><span class="p">);</span>
+<span class="n">gsl_rng_free</span><span class="p">(</span><span class="n">rng</span><span class="p">);</span>
+
+<span class="c1">////////////////////////////////</span>
+<span class="c1">// C++11</span>
+<span class="c1">////////////////////////////////</span>
+<span class="cp">#define XOROSHIRO_GSL
+#include &lt;xoroshiro.h&gt; // also includes gsl_rng.h now
+</span><span class="n">XoroshiroRandomNumberEngine</span> <span class="n">xRng</span><span class="p">(</span><span class="mi">42</span> <span class="cm">/* seed */</span><span class="p">,</span> <span class="cm">/* thread number */</span> <span class="mi">3</span><span class="p">);</span>
+<span class="k">const</span> <span class="n">gsl_rng</span><span class="o">*</span> <span class="n">rngForGSL</span> <span class="o">=</span> <span class="n">xRng</span><span class="p">.</span><span class="n">getGSLRNGPtr</span><span class="p">();</span>
+
+<span class="c1">// generates real in [0, 1[</span>
+<span class="k">const</span> <span class="kt">double</span> <span class="n">real</span> <span class="o">=</span> <span class="n">gsl_rng_uniform</span><span class="p">(</span><span class="n">rngForGSL</span><span class="p">);</span></code></pre></figure>
+
 
 </article>
 

@@ -4,4 +4,3 @@ highlighter: rouge
 permalink: :title
 exclude: [README.md, LICENSE, Makefile]
 baseurl: ''
-
