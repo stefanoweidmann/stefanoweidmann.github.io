@@ -9,7 +9,7 @@ title: "Hardware breakpoints for Win64"
 ### Basic Usage
 
 {% highlight C %}
-#include "breakpoint.h"
+#include "hwbreakpoint.h"
 
 // let's assume you have variable "val" that you want to watch on it
 SomeNativeType val;
