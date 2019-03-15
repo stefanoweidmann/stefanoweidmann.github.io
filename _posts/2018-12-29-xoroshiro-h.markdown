@@ -80,7 +80,7 @@ gsl_rng_free(rng);
 #define XOROSHIRO_GSL
 #include <xoroshiro.h> // also includes gsl_rng.h now
 XoroshiroRandomNumberEngine xRng(42 /* seed */, /* thread number */ 3);
-const gsl_rng* rngForGSL = xRng.getGSLRNGPtr();
+const gsl_rng* rngForGSL = xRng.getGslRngPtr();
 
 // generates real in [0, 1[
 const double real = gsl_rng_uniform(rngForGSL);
